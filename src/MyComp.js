@@ -1,46 +1,60 @@
 import React, { PureComponent } from 'react';
-import styled, {css, ThemeProvider} from 'styled-components';
-import theme from 'styled-theming';
+import styled, {css} from 'styled-components';
 
 const Button = styled.button`
-  background: transparent;
-  border: 2px solid palevioletred;
-  color: palevioletred;
+  transition: background-color .5s ease-out, color .25s ease;
+  background: ${props => props.theme.backgroundColor};
+  border: 2px solid ${props => props.theme.borderColor};
+  color: ${props => props.theme.color};
   border-radius: 2px; 
   padding: 0.25em 1em;
   margin: 0 1em;
   ${props =>  
     props.primary &&
       css`
-        background: palevioletred;
+        background: ${props => props.theme.primaryBackgroundColor};
         color: white; 
       `
   }
 `
-const containerBackgroundColor = theme('mode', {
-    light: '#fff',
-    dark: '#000'
-  })
+// FIXME: default not working
+Button.defaultProps = {
+  theme: {
+    backgroundColor: 'white',
+    borderColor: 'gray',
+    color: '#333',
+    primaryBackgroundColor: 'gray',
+    primaryBorderColor: 'gray',
+    primaryColor: 'gray',
+  }
+};
   
 const Container = styled.div`
   text-align: center;
   padding: 1em;
   width: 100%;
-  height: 100%;
-  position: absolute;
-  background-color: ${containerBackgroundColor};
+  border-bottom: 1px solid ${(props) => props.theme.borderColor};
+  background-color: ${(props) => props.theme.backgroundColor};
 `
 
 class MyComp extends PureComponent {
+    static defaultProps = {
+      labels: {
+        normal: 'Normal Button',
+        primary: 'Primary Button',
+      },
+      onButtonClick: (e) => {console.log("onButtonClick");
+      },
+    }
     constructor(props) {
         super(props);
-        this.state = {  };
     }
     render() {
-        return (
+      const {labels} = this.props;
+         return (
             <Container>
-                <Button>Normal Button</Button>
-                <Button primary>Primary Button</Button>
+                <Button onClick={(e)=>this.props.onButtonClick('normal', e)}>{labels.normal}</Button>
+                <Button primary onClick={e => this.props.onButtonClick('primary', e)}>{labels.primary}</Button>
             </Container>
         );
     }
